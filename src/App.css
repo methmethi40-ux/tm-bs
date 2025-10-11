@@ -1,0 +1,80 @@
+/* App.css - layout and corrected gradient text */
+
+/* --- Global Layout --- */
+.app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(circle at 10% 10%, #071028 0%, #02030a 60%);
+  color: #e8eef6;
+  font-family: "Poppins", sans-serif;
+}
+
+/* --- Left Sidebar --- */
+.sidebar {
+  width: 240px;
+  background: rgba(12, 14, 22, 0.96);
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  z-index: 50; /* keep above main blurred backgrounds */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+}
+
+/* --- Main Content --- */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* important to allow the center column to shrink */
+  position: relative;
+  overflow: auto;
+}
+
+/* top area for navbar + content */
+.content-area {
+  padding: 28px;
+  box-sizing: border-box;
+}
+
+/* Keep upload studio card centered and not full-width */
+.upload-card {
+  max-width: 900px;
+  margin: 0 auto; /* centers horizontally */
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.65);
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* Section heading gradient text — include both standard and webkit */
+.section-heading {
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ff0059, #ff7b00);
+  background-clip: text;          /* standard */
+  -webkit-background-clip: text;  /* WebKit */
+  -webkit-text-fill-color: transparent; /* WebKit fill */
+  color: transparent;             /* standard fallback */
+}
+
+/* Small utility */
+.small-muted {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.95rem;
+}
+
+/* Make sure right sidebar area (if placed globally) won't overlap */
+.right-placeholder {
+  width: 320px;
+}
+
+/* Responsive: collapse right sidebar space on small screens */
+@media (max-width: 900px) {
+  .sidebar { display: none; } /* hide left menu on tiny screens for now */
+  .right-placeholder { display: none; }
+  .content-area { padding: 16px; }
+  .upload-card { padding: 14px; }
+}
