@@ -1,8 +1,10 @@
+// src/firebase.js
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
+// Your Firebase configuration (you already provided this)
 const firebaseConfig = {
   apiKey: "AIzaSyBwf4vaYKo9vWPyF_cWMNVOfKfaxkQJTRg",
   authDomain: "t-m-b-publishers.firebaseapp.com",
@@ -13,13 +15,19 @@ const firebaseConfig = {
   measurementId: "G-CP3046CMP8"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
+export const provider = new GoogleAuthProvider();
+export const storage = getStorage(app);
 
-// Initialize services
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app); // 👈 VERY IMPORTANT
+export default app;
+import ReactGA from "react-ga4";
 
-// Export them
-export { auth, db, storage };
+export const initGA = () => {
+  ReactGA.initialize("G-TQPWB9SK39"); // replace with your GA Measurement ID
+};
+
+export const logPageView = (path) => {
+  ReactGA.send({ hitType: "pageview", page: path });
+};

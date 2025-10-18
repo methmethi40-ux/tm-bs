@@ -78,3 +78,23 @@
   .content-area { padding: 16px; }
   .upload-card { padding: 14px; }
 }
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.card {
+  background: rgba(20, 20, 20, 0.8);
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}

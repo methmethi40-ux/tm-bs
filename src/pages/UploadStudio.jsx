@@ -1,117 +1,95 @@
-// src/pages/UploadStudio.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect } from "react";
+import "./UploadStudio.css";
 
 export default function UploadStudio() {
-  const [type, setType] = useState("image");
   const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const prevRef = useRef(null);
+  const [uploadType, setUploadType] = useState("image");
+  const [channel, setChannel] = useState("");
+  const [channels, setChannels] = useState([]);
+  const [newChannel, setNewChannel] = useState("");
+  const [content, setContent] = useState("");
 
   useEffect(() => {
-    return () => {
-      if (prevRef.current) URL.revokeObjectURL(prevRef.current);
-    };
+    const saved = JSON.parse(localStorage.getItem("channels")) || [];
+    setChannels(saved);
   }, []);
 
-  const handleFileChange = (e) => {
-    const f = e.target.files?.[0];
-    if (!f) { setFile(null); setPreview(null); return; }
-    setFile(f);
-    if (prevRef.current) URL.revokeObjectURL(prevRef.current);
-    const url = URL.createObjectURL(f);
-    prevRef.current = url;
-    setPreview(url);
+  const addChannel = () => {
+    if (!newChannel.trim()) return alert("Enter a channel name");
+    const updated = [...channels, newChannel];
+    localStorage.setItem("channels", JSON.stringify(updated));
+    setChannels(updated);
+    setNewChannel("");
   };
 
-  const handleUpload = (e) => {
-    e.preventDefault();
-    if (!file) return alert("Choose a file first.");
-    setUploading(true);
-    setProgress(0);
+  const handleUpload = () => {
+    if (!file && !content) return alert("Please add content");
+    if (!channel) return alert("Please select a channel");
 
-    // Cloudinary upload (simple XHR for progress). Make sure preset/cloud name are correct.
-    const CLOUD_NAME = "ddryt9alc";
-    const UPLOAD_PRESET = "ml_default";
-    const resource = type === "video" ? "video" : type === "raw" ? "raw" : "image";
-    const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resource}/upload`;
-
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("upload_preset", UPLOAD_PRESET);
-
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", url);
-    xhr.upload.onprogress = (ev) => {
-      if (ev.lengthComputable) setProgress(Math.round((ev.loaded / ev.total) * 100));
+    const reader = new FileReader();
+    reader.onload = () => {
+      const uploads = JSON.parse(localStorage.getItem("uploads")) || [];
+      const newUpload = {
+        id: Date.now(),
+        type: uploadType,
+        channel,
+        file: uploadType === "article" ? content : reader.result,
+        name: file ? file.name : "Article",
+        likes: 0,
+        lovers: 0,
+        comments: [],
+      };
+      uploads.push(newUpload);
+      localStorage.setItem("uploads", JSON.stringify(uploads));
+      alert("✅ Uploaded!");
+      setFile(null);
+      setContent("");
     };
-    xhr.onload = () => {
-      setUploading(false);
-      if (xhr.status >= 200 && xhr.status < 300) {
-        const json = JSON.parse(xhr.responseText);
-        alert("Uploaded: " + (json.secure_url || json.url));
-        setProgress(100);
-      } else {
-        console.error("Upload failed", xhr.responseText);
-        alert("Upload failed. See console.");
-      }
-    };
-    xhr.onerror = () => { setUploading(false); alert("Network error during upload."); };
-    xhr.send(fd);
+    if (uploadType === "article") reader.onload(); 
+    else reader.readAsDataURL(file);
   };
 
   return (
-    <div className="content-area">
-      <div className="upload-card">
-        <h2 className="section-heading">Upload Studio</h2>
-        <p className="small-muted">Upload videos, photos, or articles. Collapse the Trending panel to get more space.</p>
+    <div className="upload-page">
+      <h2>🎬 Upload Studio</h2>
 
-        <form onSubmit={handleUpload} style={{ marginTop: 14 }}>
-          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-            {["image", "video", "raw"].map((opt) => (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => setType(opt)}
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: 10,
-                  border: "none",
-                  cursor: "pointer",
-                  background: type === opt ? "linear-gradient(90deg,#00eaff,#7b2ff7)" : "rgba(255,255,255,0.03)",
-                  color: type === opt ? "#04121a" : "#fff",
-                  fontWeight: 700,
-                }}
-              >
-                {opt === "image" ? "📸 Image" : opt === "video" ? "🎥 Video" : "📄 Other"}
-              </button>
-            ))}
-          </div>
+      <div className="upload-box">
+        <select value={uploadType} onChange={(e) => setUploadType(e.target.value)}>
+          <option value="image">Image</option>
+          <option value="video">Video</option>
+          <option value="article">Article</option>
+        </select>
 
-          <div style={{ marginBottom: 10 }}>
-            <input type="file" accept={type === "video" ? "video/*" : type === "image" ? "image/*" : "*/*"} onChange={handleFileChange} />
-          </div>
-
-          {preview && (type === "image" ? (
-            <img src={preview} alt="preview" style={{ width: "100%", borderRadius: 10, marginBottom: 10 }} />
-          ) : (
-            <video src={preview} controls style={{ width: "100%", borderRadius: 10, marginBottom: 10 }} />
+        <select value={channel} onChange={(e) => setChannel(e.target.value)}>
+          <option value="">Select Channel</option>
+          {channels.map((ch, i) => (
+            <option key={i}>{ch}</option>
           ))}
+        </select>
 
-          <div style={{ display: "flex", gap: 10 }}>
-            <button type="submit" disabled={uploading} style={{ padding: "10px 14px", borderRadius: 10, border: "none", background: "linear-gradient(90deg,#00eaff,#7b2ff7)", fontWeight: 800, color: "#04121a", cursor: "pointer" }}>
-              {uploading ? `Uploading ${progress}%` : "Upload"}
-            </button>
-            <button type="button" onClick={() => { setFile(null); setPreview(null); setProgress(0); }} style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.05)", background: "transparent", color: "#fff", cursor: "pointer" }}>
-              Reset
-            </button>
-          </div>
+        <div className="channel-add">
+          <input
+            type="text"
+            placeholder="New Channel"
+            value={newChannel}
+            onChange={(e) => setNewChannel(e.target.value)}
+          />
+          <button onClick={addChannel}>➕</button>
+        </div>
 
-          {uploading && <div style={{ marginTop: 10, height: 10, background: "rgba(255,255,255,0.04)", borderRadius: 8 }}>
-            <div style={{ width: `${progress}%`, height: "100%", background: "linear-gradient(90deg,#00eaff,#7b2ff7)", borderRadius: 8 }} />
-          </div>}
-        </form>
+        {uploadType !== "article" ? (
+          <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+        ) : (
+          <textarea
+            placeholder="Write your article..."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          ></textarea>
+        )}
+
+        <button className="upload-btn" onClick={handleUpload}>
+          🚀 Upload
+        </button>
       </div>
     </div>
   );

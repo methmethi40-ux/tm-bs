@@ -18,6 +18,12 @@ const UploadModal = ({ setShowUpload, user }) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", UPLOAD_PRESET);
+    data.append("upload_preset", "tm-bs"); // must match the preset name exactly
+const res = await fetch("https://api.cloudinary.com/v1_1/ddryt9alc/image/upload", {
+  method: "POST",
+  body: data,
+});
+
 
     try {
       await axios.post(CLOUDINARY_URL, formData);
