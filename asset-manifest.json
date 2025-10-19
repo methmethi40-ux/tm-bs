@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/BotVerse/static/css/main.8e4c252e.css",
-    "main.js": "/BotVerse/static/js/main.4833e10d.js",
-    "index.html": "/BotVerse/index.html",
-    "main.8e4c252e.css.map": "/BotVerse/static/css/main.8e4c252e.css.map",
-    "main.4833e10d.js.map": "/BotVerse/static/js/main.4833e10d.js.map"
+    "main.css": "/Robot-Verse/static/css/main.f519f24b.css",
+    "main.js": "/Robot-Verse/static/js/main.baada319.js",
+    "index.html": "/Robot-Verse/index.html",
+    "main.f519f24b.css.map": "/Robot-Verse/static/css/main.f519f24b.css.map",
+    "main.baada319.js.map": "/Robot-Verse/static/js/main.baada319.js.map"
   },
   "entrypoints": [
-    "static/css/main.8e4c252e.css",
-    "static/js/main.4833e10d.js"
+    "static/css/main.f519f24b.css",
+    "static/js/main.baada319.js"
   ]
 }
